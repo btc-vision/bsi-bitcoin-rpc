@@ -1,7 +1,7 @@
 {
     "type": "module",
     "name": "@btc-vision/bsi-bitcoin-rpc",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -21,8 +21,8 @@
         "setup": "npm npm i && npm run build",
         "install": "gulp && gulp cjs"
     },
-    "author": "OP_NET Foundation",
-    "license": "ISC",
+    "author": "BlobMaster41",
+    "license": "LICENSE.MD",
     "devDependencies": {
         "@babel/preset-env": "^7.24.3",
         "@types/node": "^20.11.30",
