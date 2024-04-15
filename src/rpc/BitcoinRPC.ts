@@ -1,4 +1,4 @@
-import { BlockchainConfig, Logger } from '@btc-vision/motoswapcommon';
+import { BlockchainConfig, Logger } from '@btc-vision/bsi-common';
 import { RPCClient } from 'rpc-bitcoin';
 import {
     Blockhash,
