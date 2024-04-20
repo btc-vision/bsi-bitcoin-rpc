@@ -3,6 +3,7 @@ export * from './rpc/types/AddressByLabel.js';
 export * from './rpc/types/BasicBlockInfo.js';
 export * from './rpc/types/BitcoinVerbosity.js';
 export * from './rpc/types/BlockData.js';
+export * from './rpc/types/BlockchainInfo.js';
 export * from './rpc/types/BlockFilterInfo.js';
 export * from './rpc/types/BlockHeaderInfo.js';
 export * from './rpc/types/BlockStats.js';
