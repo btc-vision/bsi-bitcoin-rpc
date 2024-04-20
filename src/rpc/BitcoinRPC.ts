@@ -48,17 +48,22 @@ export class BitcoinRPC extends Logger {
     private blockchainInfo: BlockchainInfo | null = null;
     private currentBlockInfo: BasicBlockInfo | null = null;
 
+    private purgeInterval: NodeJS.Timeout | null = null;
+
     constructor() {
         super();
 
         this.purgeCachedData();
     }
 
-    private purgeCachedData(): void {
-        setInterval(() => {
-            this.blockchainInfo = null;
-            this.currentBlockInfo = null;
-        }, 12000);
+    public destroy(): void {
+        if (this.purgeInterval) {
+            clearInterval(this.purgeInterval);
+        }
+
+        this.rpc = null;
+        this.blockchainInfo = null;
+        this.currentBlockInfo = null;
     }
 
     public getRpcConfigFromBlockchainConfig(rpcInfo: BlockchainConfig): RPCIniOptions {
@@ -746,6 +751,24 @@ export class BitcoinRPC extends Logger {
         return proofs || null;
     }
 
+    public async init(rpcInfo: BlockchainConfig): Promise<void> {
+        if (this.rpc) {
+            throw new Error('RPC already initialized');
+        }
+
+        const rpcConfig = this.getRpcConfigFromBlockchainConfig(rpcInfo);
+        this.rpc = new RPCClient(rpcConfig);
+
+        await this.testRPC(rpcInfo);
+    }
+
+    private purgeCachedData(): void {
+        this.purgeInterval = setInterval(() => {
+            this.blockchainInfo = null;
+            this.currentBlockInfo = null;
+        }, 12000);
+    }
+
     private async testRPC(rpcInfo: BlockchainConfig): Promise<void> {
         try {
             const chainInfo = await this.getChainInfo();
@@ -777,16 +800,5 @@ export class BitcoinRPC extends Logger {
             const error = e as Error;
             this.error(`RPC errored. Please check your configuration. ${error.message}`);
         }
-    }
-
-    public async init(rpcInfo: BlockchainConfig): Promise<void> {
-        if (this.rpc) {
-            throw new Error('RPC already initialized');
-        }
-
-        const rpcConfig = this.getRpcConfigFromBlockchainConfig(rpcInfo);
-        this.rpc = new RPCClient(rpcConfig);
-
-        await this.testRPC(rpcInfo);
     }
 }
