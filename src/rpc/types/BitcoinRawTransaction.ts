@@ -25,6 +25,7 @@ export interface ScriptPubKey {
     reqSigs?: number;
     type?: string; // Consider enum if there are known, limited values for type
     addresses?: string[];
+    address?: string; // Optional as it might not be present for unconfirmed transactions
 }
 
 export interface Vout {
