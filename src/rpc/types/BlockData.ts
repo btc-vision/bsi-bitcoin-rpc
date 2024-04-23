@@ -1,3 +1,5 @@
+import { ScriptPubKey } from './BitcoinRawTransaction.js';
+
 export interface VIn {
     txid: string;
     vout: number;
@@ -12,13 +14,7 @@ export interface VIn {
 export interface VOut {
     value: number;
     n: number;
-    scriptPubKey: {
-        asm: string;
-        hex: string;
-        reqSigs: number;
-        type: string;
-        addresses: string[];
-    }
+    scriptPubKey: ScriptPubKey;
 }
 
 export interface TransactionData {
