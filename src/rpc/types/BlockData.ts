@@ -1,14 +1,11 @@
-import { ScriptPubKey } from './BitcoinRawTransaction.js';
+import { ScriptPubKey, ScriptSig } from './BitcoinRawTransaction.js';
 
 export interface VIn {
     txid: string;
     vout: number;
-    scriptSig: {
-        asm: string;
-        hex: string;
-    };
+    scriptSig: ScriptSig;
     sequence: number;
-    txinwitness: string[];
+    txinwitness?: string[];
 }
 
 export interface VOut {
