@@ -6,6 +6,7 @@ export interface VIn {
     scriptSig: ScriptSig;
     sequence: number;
     txinwitness?: string[];
+    coinbase?: string;
 }
 
 export interface VOut {
