@@ -1,7 +1,7 @@
 {
     "type": "module",
     "name": "@btc-vision/bsi-bitcoin-rpc",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -33,7 +33,7 @@
         "typescript-eslint": "^7.4.0"
     },
     "dependencies": {
-        "@btc-vision/bsi-common": "^1.0.0",
+        "@btc-vision/bsi-common": "latest",
         "@jest/types": "^29.6.3",
         "@types/cors": "^2.8.17",
         "@types/debug": "^4.1.12",
