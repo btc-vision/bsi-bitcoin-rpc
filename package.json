@@ -21,8 +21,12 @@
         "setup": "npm npm i && npm run build",
         "install": "gulp && gulp cjs"
     },
+	"publishConfig": {
+        "access": "public",
+        "tag": "latest"
+    },
     "author": "BlobMaster41",
-    "license": "LICENSE.MD",
+    "license": "MIT",
     "devDependencies": {
         "@babel/preset-env": "^7.24.3",
         "@types/node": "^20.11.30",
@@ -32,6 +36,22 @@
         "typescript": "^5.4.3",
         "typescript-eslint": "^7.4.0"
     },
+	"repository": {
+        "type": "git",
+        "url": "git://github.com/btc-vision/bsi-bitcoin-rpc.git"
+    },
+	"homepage": "https://opnet.org",
+    "keywords": [
+        "bitcoin",
+        "opnet",
+        "btc",
+        "bitcoin smart contracts",
+        "smart inscriptions",
+        "bsi",
+        "bsi-binary",
+		"bsi-bitcoin-rpc",
+        "ordinals"
+    ],
     "dependencies": {
         "@btc-vision/bsi-common": "github:btc-vision/bsi-common",
         "@jest/types": "^29.6.3",
@@ -44,6 +64,7 @@
         "gulp-cached": "^1.1.1",
         "gulp-logger": "^0.0.2",
         "gulp-typescript": "^6.0.0-alpha.1",
+        "gulplog": "^2.2.0",
         "rpc-bitcoin": "^2.0.0",
         "supports-color": "^9.4.0",
         "ts-jest": "^29.1.2",
