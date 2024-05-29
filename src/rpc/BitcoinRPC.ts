@@ -343,7 +343,7 @@ export class BitcoinRPC extends Logger {
             .getaddressesbylabel(params, wallet)
             .catch((e) => {
                 this.error(`Error getting address by label: ${e.stack || e.message}`);
-                throw new Error(`Error getting address by label: ${e.stack || e.message}`);
+                throw new Error(e);
             });
 
         return address || null;
@@ -357,7 +357,7 @@ export class BitcoinRPC extends Logger {
         const txId: string = await this.rpc.sendrawtransaction(params).catch((e) => {
             this.error(`Error sending raw transaction: ${e.stack || e.message}`);
 
-            throw new Error(`Error sending raw transaction: ${e.stack || e.message}`);
+            throw new Error(e);
         });
 
         return txId || null;
