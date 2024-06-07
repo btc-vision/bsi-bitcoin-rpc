@@ -1,4 +1,4 @@
-# BSI Bitcoin RPC
+# OP_NET: BSI Bitcoin RPC
 
 ![Bitcoin](https://img.shields.io/badge/Bitcoin-000?style=for-the-badge&logo=bitcoin&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -54,7 +54,7 @@ the `docs/` directory of the repository.
 
 Contributions are welcome! Please read through the `CONTRIBUTING.md` file for
 guidelines on how to submit issues, feature requests, and pull requests. We
-appreciate your input and encourage you to help us improve OPNet.
+appreciate your input and encourage you to help us improve OP_Net.
 
 ## License
 
