@@ -16,4 +16,6 @@ export * from './rpc/types/TransactionOutputSetInfo.js';
 export * from './rpc/types/TransactionOutputInfo.js';
 export * from './rpc/types/WalletInfo.js';
 
+export * from './rpc/types/FeeEstimation.js';
+
 export * from './rpc/BitcoinRPC.js';

@@ -1,5 +1,5 @@
 import { BlockchainConfig, Logger } from '@btc-vision/bsi-common';
-import { RPCClient } from 'rpc-bitcoin';
+import { EstimateSmartFeeParams, RPCClient } from 'rpc-bitcoin';
 import {
     Blockhash,
     CreateWalletParams,
@@ -39,6 +39,7 @@ import {
 import { TransactionOutputInfo } from './types/TransactionOutputInfo.js';
 import { TransactionOutputSetInfo } from './types/TransactionOutputSetInfo.js';
 import { WalletInfo } from './types/WalletInfo.js';
+import { FeeEstimation, SmartFeeEstimation } from './types/FeeEstimation.js';
 
 export class BitcoinRPC extends Logger {
     public readonly logColor: string = '#fa9600';
@@ -104,6 +105,39 @@ export class BitcoinRPC extends Logger {
         });
 
         return blockData == '' ? null : blockData;
+    }
+
+    public async estimateSmartFee(
+        confTarget: number,
+        estimateMode: FeeEstimation = FeeEstimation.CONSERVATIVE,
+    ): Promise<SmartFeeEstimation> {
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const opts: EstimateSmartFeeParams = {
+            conf_target: confTarget,
+            estimate_mode: estimateMode,
+        };
+
+        return await this.rpc.estimatesmartfee(opts);
+    }
+
+    public async joinPSBTs(psbts: string[]): Promise<string | null> {
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const result: string = await this.rpc
+            .joinpsbts({
+                txs: psbts,
+            })
+            .catch((e) => {
+                this.error(`Error joining PSBTs: ${e.stack || e.message}`);
+                return '';
+            });
+
+        return result || null;
     }
 
     public async getBlockInfoOnly(blockHash: string): Promise<BlockData | null> {
