@@ -54,7 +54,10 @@ export class BitcoinRPC extends Logger {
 
     private purgeInterval: NodeJS.Timeout | null = null;
 
-    constructor() {
+    constructor(
+        private readonly cacheClearInterval: number = 1000,
+        private readonly enableDebug: boolean = false,
+    ) {
         super();
 
         this.purgeCachedData();
@@ -80,6 +83,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBestBlockHash(): Promise<string | null> {
+        this.debugMessage('getBestBlockHash');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -93,6 +98,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBlockAsHexString(blockHash: string): Promise<string | null> {
+        this.debugMessage('getBlockAsHexString');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -114,6 +121,8 @@ export class BitcoinRPC extends Logger {
         confTarget: number,
         estimateMode: FeeEstimation = FeeEstimation.CONSERVATIVE,
     ): Promise<SmartFeeEstimation> {
+        this.debugMessage('estimateSmartFee');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -127,6 +136,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async joinPSBTs(psbts: string[]): Promise<string | null> {
+        this.debugMessage('joinPSBTs');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -144,6 +155,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBlockInfoOnly(blockHash: string): Promise<BlockData | null> {
+        this.debugMessage('getBlockInfoOnly');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -164,6 +177,8 @@ export class BitcoinRPC extends Logger {
     public async getBlockInfoWithTransactionData(
         blockHash: string,
     ): Promise<BlockDataWithTransactionData | null> {
+        this.debugMessage(`getBlockInfoWithTransactionData ${blockHash}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -184,6 +199,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBlockCount(): Promise<number | null> {
+        this.debugMessage('getBlockCount');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -200,6 +217,8 @@ export class BitcoinRPC extends Logger {
         blockHash: string,
         filterType?: string,
     ): Promise<BlockFilterInfo | null> {
+        this.debugMessage(`getBlockFilter ${blockHash}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -217,6 +236,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBlockHash(height: number): Promise<string | null> {
+        this.debugMessage(`getBlockHash ${height}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -234,6 +255,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getChainInfo(): Promise<BlockchainInfo | null> {
+        this.debugMessage('getChainInfo');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -251,6 +274,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getWalletInfo(walletName: string): Promise<WalletInfo | null> {
+        this.debugMessage(`getWalletInfo ${walletName}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -266,6 +291,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async createWallet(params: CreateWalletParams): Promise<CreateWalletResponse | null> {
+        this.debugMessage('createWallet');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -281,6 +308,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async loadWallet(filename: string): Promise<CreateWalletResponse | null> {
+        this.debugMessage(`loadWallet ${filename}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -300,6 +329,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async listWallets(): Promise<string[] | null> {
+        this.debugMessage('listWallets');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -313,6 +344,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getNewAddress(label: string, wallet?: string): Promise<string | null> {
+        this.debugMessage(`getNewAddress ${label}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -334,6 +367,8 @@ export class BitcoinRPC extends Logger {
         address: string,
         wallet?: string,
     ): Promise<string[] | null> {
+        this.debugMessage(`generateToAddress ${nBlock} ${address}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -359,6 +394,8 @@ export class BitcoinRPC extends Logger {
         rescan?: boolean,
         wallet?: string,
     ): Promise<void> {
+        this.debugMessage(`importPrivateKey ${label}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -375,6 +412,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getAddressByLabel(label: string, wallet?: string): Promise<AddressByLabel | null> {
+        this.debugMessage(`getAddressByLabel ${label}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -394,6 +433,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async sendRawTransaction(params: SendRawTransactionParams): Promise<string | null> {
+        this.debugMessage('sendRawTransaction');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -408,6 +449,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async dumpPrivateKey(address: string, wallet?: string): Promise<string | null> {
+        this.debugMessage(`dumpPrivateKey ${address}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -430,6 +473,8 @@ export class BitcoinRPC extends Logger {
     public async getRawTransaction<V extends BitcoinVerbosity>(
         parameters: BitcoinRawTransactionParams,
     ): Promise<RawTransaction<V> | null> {
+        this.debugMessage(`getRawTransaction ${parameters.txId}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -454,6 +499,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getBlockHeight(): Promise<BasicBlockInfo | null> {
+        this.debugMessage('getBlockHeight');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -469,6 +516,8 @@ export class BitcoinRPC extends Logger {
         blockHash: string,
         verbose?: boolean,
     ): Promise<BlockHeaderInfo | null> {
+        this.debugMessage(`getBlockHeader ${blockHash} ${verbose}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -490,6 +539,8 @@ export class BitcoinRPC extends Logger {
         height: number,
         stats?: string[],
     ): Promise<BlockStats | null> {
+        this.debugMessage(`getBlockStatsByHeight ${height} ${stats}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -511,6 +562,8 @@ export class BitcoinRPC extends Logger {
         blockHash: string,
         stats?: string[],
     ): Promise<BlockStats | null> {
+        this.debugMessage(`getBlockStatsByHash ${blockHash} ${stats}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -529,6 +582,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getChainTips(): Promise<ChainTipInfo[] | null> {
+        this.debugMessage('getChainTips');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -542,6 +597,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getChainTxStats(param: GetChainTxStatsParams): Promise<ChainTxStats | null> {
+        this.debugMessage('getChainTxStats');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -557,6 +614,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getDifficulty(): Promise<number | null> {
+        this.debugMessage('getDifficulty');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -573,6 +632,8 @@ export class BitcoinRPC extends Logger {
         txId: string,
         verbose?: V,
     ): Promise<MemPoolTransactionInfo<V> | null> {
+        this.debugMessage(`getMempoolAncestors ${txId}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -596,6 +657,8 @@ export class BitcoinRPC extends Logger {
         txid: string,
         verbose?: V,
     ): Promise<MemPoolTransactionInfo<V> | null> {
+        this.debugMessage(`getMempoolDescendants ${txid}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -616,6 +679,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getMempoolEntry(txid: string): Promise<RawMemPoolTransactionInfo | null> {
+        this.debugMessage(`getMempoolEntry ${txid}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -635,6 +700,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getMempoolInfo(): Promise<MempoolInfo<BitcoinVerbosity.NONE> | null> {
+        this.debugMessage('getMempoolInfo');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -652,6 +719,8 @@ export class BitcoinRPC extends Logger {
     public async getRawMempool<V extends BitcoinVerbosity>(
         verbose?: V,
     ): Promise<MempoolInfo<V> | null> {
+        this.debugMessage('getRawMempool');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -675,6 +744,8 @@ export class BitcoinRPC extends Logger {
         voutNumber: number,
         includeMempool?: boolean,
     ): Promise<TransactionOutputInfo | null> {
+        this.debugMessage(`getTxOut ${txid} ${voutNumber}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -696,6 +767,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getTxOutProof(txids: string[], blockHash?: string): Promise<string | null> {
+        this.debugMessage(`getTxOutProof ${txids} ${blockHash}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -714,6 +787,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async getTxOutSetInfo(): Promise<TransactionOutputSetInfo | null> {
+        this.debugMessage('getTxOutSetInfo');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -729,6 +804,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async preciousBlock(blockHash: string): Promise<void> {
+        this.debugMessage(`preciousBlock ${blockHash}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -743,6 +820,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async pruneBlockChain(height: number): Promise<number | null> {
+        this.debugMessage(`pruneBlockChain ${height}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -760,6 +839,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async saveMempool(): Promise<void> {
+        this.debugMessage('saveMempool');
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -770,6 +851,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async verifyChain(checkLevel?: number, nblocks?: number): Promise<boolean | null> {
+        this.debugMessage(`verifyChain ${checkLevel} ${nblocks}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -788,6 +871,8 @@ export class BitcoinRPC extends Logger {
     }
 
     public async verifyTxOutProof(proof: string): Promise<string[] | null> {
+        this.debugMessage(`verifyTxOutProof ${proof}`);
+
         if (!this.rpc) {
             throw new Error('RPC not initialized');
         }
@@ -815,11 +900,17 @@ export class BitcoinRPC extends Logger {
         await this.testRPC();
     }
 
+    private debugMessage(message: string): void {
+        if (this.enableDebug) {
+            this.log(message);
+        }
+    }
+
     private purgeCachedData(): void {
         this.purgeInterval = setInterval(() => {
             this.blockchainInfo = null;
             this.currentBlockInfo = null;
-        }, 12000);
+        }, this.cacheClearInterval);
     }
 
     private async testRPC(): Promise<void> {
