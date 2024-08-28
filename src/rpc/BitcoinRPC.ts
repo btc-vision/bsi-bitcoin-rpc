@@ -1,4 +1,4 @@
-import { BlockchainConfig, Logger } from '@btc-vision/bsi-common';
+import { Logger } from '@btc-vision/bsi-common';
 import {
     Blockhash,
     CreateWalletParams,
@@ -25,7 +25,7 @@ import { AddressByLabel } from './types/AddressByLabel.js';
 import { BasicBlockInfo } from './types/BasicBlockInfo.js';
 import { BitcoinRawTransactionParams, RawTransaction } from './types/BitcoinRawTransaction.js';
 import { BitcoinVerbosity } from './types/BitcoinVerbosity.js';
-import { BitcoinChains, BlockchainInfo } from './types/BlockchainInfo.js';
+import { BlockchainInfo } from './types/BlockchainInfo.js';
 import { BlockData, BlockDataWithTransactionData } from './types/BlockData.js';
 import { BlockFilterInfo } from './types/BlockFilterInfo.js';
 import { BlockHeaderInfo } from './types/BlockHeaderInfo.js';
@@ -42,6 +42,7 @@ import { TransactionOutputInfo } from './types/TransactionOutputInfo.js';
 import { TransactionOutputSetInfo } from './types/TransactionOutputSetInfo.js';
 import { WalletInfo } from './types/WalletInfo.js';
 import { FeeEstimation, SmartFeeEstimation } from './types/FeeEstimation.js';
+import { RPCConfig } from './interfaces/RPCConfig.js';
 
 export class BitcoinRPC extends Logger {
     public readonly logColor: string = '#fa9600';
@@ -69,7 +70,7 @@ export class BitcoinRPC extends Logger {
         this.currentBlockInfo = null;
     }
 
-    public getRpcConfigFromBlockchainConfig(rpcInfo: BlockchainConfig): RPCIniOptions {
+    public getRpcConfigFromBlockchainConfig(rpcInfo: RPCConfig): RPCIniOptions {
         return {
             url: `http://${rpcInfo.BITCOIND_HOST}`,
             port: rpcInfo.BITCOIND_PORT,
@@ -803,7 +804,7 @@ export class BitcoinRPC extends Logger {
         return proofs || null;
     }
 
-    public async init(rpcInfo: BlockchainConfig): Promise<void> {
+    public async init(rpcInfo: RPCConfig): Promise<void> {
         if (this.rpc) {
             throw new Error('RPC already initialized');
         }
@@ -811,7 +812,7 @@ export class BitcoinRPC extends Logger {
         const rpcConfig = this.getRpcConfigFromBlockchainConfig(rpcInfo);
         this.rpc = new RPCClient(rpcConfig);
 
-        await this.testRPC(rpcInfo);
+        await this.testRPC();
     }
 
     private purgeCachedData(): void {
@@ -821,7 +822,7 @@ export class BitcoinRPC extends Logger {
         }, 12000);
     }
 
-    private async testRPC(rpcInfo: BlockchainConfig): Promise<void> {
+    private async testRPC(): Promise<void> {
         try {
             const chainInfo = await this.getChainInfo();
             if (!chainInfo) {
@@ -829,7 +830,7 @@ export class BitcoinRPC extends Logger {
                 process.exit(1);
             }
 
-            const chain = chainInfo.chain;
+            /*const chain = chainInfo.chain;
             if (BitcoinChains.MAINNET !== chain && rpcInfo.BITCOIND_NETWORK === 'mainnet') {
                 this.error('Chain is not mainnet. Please check your configuration.');
                 process.exit(1);
@@ -847,7 +848,7 @@ export class BitcoinRPC extends Logger {
                 this.success(
                     `RPC initialized. {Chain: ${rpcInfo.BITCOIND_NETWORK}. Block height: ${chainInfo.blocks}}`,
                 );
-            }
+            }*/
         } catch (e: unknown) {
             const error = e as Error;
             this.error(`RPC errored. Please check your configuration. ${error.message}`);
