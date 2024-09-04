@@ -404,5 +404,7 @@ src/tests
 
 .conf
 
-cjs
+cjs/*
+!cjs/package.json
+
 .idea

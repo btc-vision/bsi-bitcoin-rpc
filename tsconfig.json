@@ -1,8 +1,11 @@
 {
-	"extends": "./tsconfig.base.json",
-	"compilerOptions": {
-		"module": "esnext",
-		"outDir": "build",
-		"target": "esnext"
-	}
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "module": "esnext",
+        "outDir": "build",
+        "target": "esnext"
+    },
+    "exclude": [
+        "tests"
+    ]
 }
