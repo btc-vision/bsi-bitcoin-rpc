@@ -440,8 +440,6 @@ export class BitcoinRPC extends Logger {
         }
 
         const txId: string | null = (await this.rpc.sendrawtransaction(params).catch((e) => {
-            this.error(`Error sending raw transaction: ${e.stack || e.message}`);
-
             throw e;
         })) as string | null;
 
