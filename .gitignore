@@ -399,12 +399,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 package-lock.json
-
-src/tests
-
-.conf
-
-cjs/*
-!cjs/package.json
-
+yarn.lock
+build
 .idea
