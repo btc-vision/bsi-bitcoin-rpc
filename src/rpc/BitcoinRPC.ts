@@ -91,7 +91,7 @@ export class BitcoinRPC extends Logger {
 
         const bestBlockHash = (await this.rpc.getbestblockhash().catch((e: unknown) => {
             this.error(`Error getting best block hash: ${e}`);
-            return '';
+            return;
         })) as string | null;
 
         return bestBlockHash || null;
@@ -914,6 +914,12 @@ export class BitcoinRPC extends Logger {
         this.rpc = new RPCClient(rpcConfig);
 
         await this.testRPC();
+    }
+
+    public override error(...args: string[]): void {
+        if (this.enableDebug) {
+            super.error(...args);
+        }
     }
 
     private debugMessage(message: string): void {
