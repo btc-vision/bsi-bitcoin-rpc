@@ -22,6 +22,7 @@ import {
 
 import { AddressByLabel } from './types/AddressByLabel.js';
 
+import { RPCConfig } from './interfaces/RPCConfig.js';
 import { BasicBlockInfo } from './types/BasicBlockInfo.js';
 import { BitcoinRawTransactionParams, RawTransaction } from './types/BitcoinRawTransaction.js';
 import { BitcoinVerbosity } from './types/BitcoinVerbosity.js';
@@ -33,6 +34,7 @@ import { BlockStats } from './types/BlockStats.js';
 import { ChainTipInfo } from './types/ChainTipInfo.js';
 import { ChainTxStats } from './types/ChainTxStats.js';
 import { CreateWalletResponse } from './types/CreateWalletResponse.js';
+import { FeeEstimation, SmartFeeEstimation } from './types/FeeEstimation.js';
 import { MempoolInfo } from './types/MempoolInfo.js';
 import {
     MemPoolTransactionInfo,
@@ -41,8 +43,6 @@ import {
 import { TransactionOutputInfo } from './types/TransactionOutputInfo.js';
 import { TransactionOutputSetInfo } from './types/TransactionOutputSetInfo.js';
 import { WalletInfo } from './types/WalletInfo.js';
-import { FeeEstimation, SmartFeeEstimation } from './types/FeeEstimation.js';
-import { RPCConfig } from './interfaces/RPCConfig.js';
 
 export class BitcoinRPC extends Logger {
     public readonly logColor: string = '#fa9600';
@@ -89,8 +89,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const bestBlockHash = (await this.rpc.getbestblockhash().catch((e) => {
-            this.error(`Error getting best block hash: ${e.stack || e.message}`);
+        const bestBlockHash = (await this.rpc.getbestblockhash().catch((e: unknown) => {
+            this.error(`Error getting best block hash: ${e}`);
             return '';
         })) as string | null;
 
@@ -109,8 +109,8 @@ export class BitcoinRPC extends Logger {
             verbosity: BitcoinVerbosity.NONE,
         };
 
-        const blockData: string | null = (await this.rpc.getblock(param).catch((e) => {
-            this.error(`Error getting block data: ${e.stack || e.message}`);
+        const blockData: string | null = (await this.rpc.getblock(param).catch((e: unknown) => {
+            this.error(`Error getting block data: ${e}`);
             return null;
         })) as string | null;
 
@@ -146,8 +146,8 @@ export class BitcoinRPC extends Logger {
             .joinpsbts({
                 txs: psbts,
             })
-            .catch((e) => {
-                this.error(`Error joining PSBTs: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error joining PSBTs: ${e}`);
                 return '';
             })) as string | null;
 
@@ -166,8 +166,8 @@ export class BitcoinRPC extends Logger {
             verbosity: BitcoinVerbosity.RAW,
         };
 
-        const blockData: BlockData | null = (await this.rpc.getblock(param).catch((e) => {
-            this.error(`Error getting block data: ${e.stack || e.message}`);
+        const blockData: BlockData | null = (await this.rpc.getblock(param).catch((e: unknown) => {
+            this.error(`Error getting block data: ${e}`);
             return null;
         })) as BlockData | null;
 
@@ -190,8 +190,8 @@ export class BitcoinRPC extends Logger {
 
         const blockData: BlockDataWithTransactionData | null = (await this.rpc
             .getblock(param)
-            .catch((e) => {
-                this.error(`Error getting block data: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting block data: ${e}`);
                 return null;
             })) as BlockDataWithTransactionData | null;
 
@@ -205,8 +205,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const blockCount: number | null = (await this.rpc.getblockcount().catch((e) => {
-            this.error(`Error getting block count: ${e.stack || e.message}`);
+        const blockCount: number | null = (await this.rpc.getblockcount().catch((e: unknown) => {
+            this.error(`Error getting block count: ${e}`);
             return 0;
         })) as number | null;
 
@@ -227,10 +227,12 @@ export class BitcoinRPC extends Logger {
             filtertype: filterType,
         };
 
-        const result: BlockFilterInfo | null = (await this.rpc.getblockfilter(param).catch((e) => {
-            this.error(`Error getting block filter: ${e.stack || e.message}`);
-            return null;
-        })) as BlockFilterInfo | null;
+        const result: BlockFilterInfo | null = (await this.rpc
+            .getblockfilter(param)
+            .catch((e: unknown) => {
+                this.error(`Error getting block filter: ${e}`);
+                return null;
+            })) as BlockFilterInfo | null;
 
         return result || null;
     }
@@ -246,8 +248,8 @@ export class BitcoinRPC extends Logger {
             height: height,
         };
 
-        const result: string | null = (await this.rpc.getblockhash(param).catch((e) => {
-            this.error(`Error getting block hash: ${e.stack || e.message}`);
+        const result: string | null = (await this.rpc.getblockhash(param).catch((e: unknown) => {
+            this.error(`Error getting block hash: ${e}`);
             return '';
         })) as string | null;
 
@@ -282,8 +284,8 @@ export class BitcoinRPC extends Logger {
 
         const walletInfo: WalletInfo | null = (await this.rpc
             .getwalletinfo(walletName)
-            .catch((e) => {
-                this.error(`Error getting wallet info: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting wallet info: ${e}`);
                 return null;
             })) as WalletInfo | null;
 
@@ -299,8 +301,8 @@ export class BitcoinRPC extends Logger {
 
         const wallet: CreateWalletResponse | null = (await this.rpc
             .createwallet(params)
-            .catch((e) => {
-                this.error(`Error creating wallet: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error creating wallet: ${e}`);
                 return '';
             })) as CreateWalletResponse | null;
 
@@ -320,8 +322,8 @@ export class BitcoinRPC extends Logger {
 
         const wallet: CreateWalletResponse | null = (await this.rpc
             .loadwallet(params)
-            .catch((e) => {
-                this.error(`Error loading wallet: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error loading wallet: ${e}`);
                 return '';
             })) as CreateWalletResponse | null;
 
@@ -335,8 +337,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const wallets: string[] | null = (await this.rpc.listwallets().catch((e) => {
-            this.error(`Error listing wallets: ${e.stack || e.message}`);
+        const wallets: string[] | null = (await this.rpc.listwallets().catch((e: unknown) => {
+            this.error(`Error listing wallets: ${e}`);
             return [];
         })) as string[] | null;
 
@@ -354,10 +356,12 @@ export class BitcoinRPC extends Logger {
             label,
         };
 
-        const address: string | null = (await this.rpc.getnewaddress(params, wallet).catch((e) => {
-            this.error(`Error getting new address: ${e.stack || e.message}`);
-            return '';
-        })) as string | null;
+        const address: string | null = (await this.rpc
+            .getnewaddress(params, wallet)
+            .catch((e: unknown) => {
+                this.error(`Error getting new address: ${e}`);
+                return '';
+            })) as string | null;
 
         return address || null;
     }
@@ -380,8 +384,8 @@ export class BitcoinRPC extends Logger {
 
         const blockHashes: string[] | null = (await this.rpc
             .generatetoaddress(params, wallet)
-            .catch((e) => {
-                this.error(`Error generating to address: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error generating to address: ${e}`);
                 return [];
             })) as string[] | null;
 
@@ -406,8 +410,8 @@ export class BitcoinRPC extends Logger {
             rescan,
         };
 
-        await this.rpc.importprivkey(params, wallet).catch((e) => {
-            this.error(`Error importing private key: ${e.stack || e.message}`);
+        await this.rpc.importprivkey(params, wallet).catch((e: unknown) => {
+            this.error(`Error importing private key: ${e}`);
         });
     }
 
@@ -424,8 +428,8 @@ export class BitcoinRPC extends Logger {
 
         const address: AddressByLabel | null = (await this.rpc
             .getaddressesbylabel(params, wallet)
-            .catch((e) => {
-                this.error(`Error getting address by label: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting address by label: ${e}`);
                 throw e;
             })) as AddressByLabel | null;
 
@@ -439,9 +443,11 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const txId: string | null = (await this.rpc.sendrawtransaction(params).catch((e) => {
-            throw e;
-        })) as string | null;
+        const txId: string | null = (await this.rpc
+            .sendrawtransaction(params)
+            .catch((e: unknown) => {
+                throw e;
+            })) as string | null;
 
         return txId || null;
     }
@@ -460,8 +466,8 @@ export class BitcoinRPC extends Logger {
                 },
                 wallet,
             )
-            .catch((e) => {
-                this.error(`Error dumping private key: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error dumping private key: ${e}`);
                 return '';
             })) as string | null;
 
@@ -488,8 +494,8 @@ export class BitcoinRPC extends Logger {
 
         const rawTx: RawTransaction<V> | null = (await this.rpc
             .getrawtransaction(params)
-            .catch((e) => {
-                this.error(`Error getting raw transaction: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting raw transaction: ${e}`);
                 return null;
             })) as RawTransaction<V> | null;
 
@@ -525,10 +531,12 @@ export class BitcoinRPC extends Logger {
             verbose: verbose,
         };
 
-        const header: BlockHeaderInfo | null = (await this.rpc.getblockheader(param).catch((e) => {
-            this.error(`Error getting block header: ${e.stack || e.message}`);
-            return '';
-        })) as BlockHeaderInfo | null;
+        const header: BlockHeaderInfo | null = (await this.rpc
+            .getblockheader(param)
+            .catch((e: unknown) => {
+                this.error(`Error getting block header: ${e}`);
+                return '';
+            })) as BlockHeaderInfo | null;
 
         return header || null;
     }
@@ -548,10 +556,12 @@ export class BitcoinRPC extends Logger {
             stats: stats,
         };
 
-        const blockStats: BlockStats | null = (await this.rpc.getblockstats(param).catch((e) => {
-            this.error(`Error getting block stats: ${e.stack || e.message}`);
-            return null;
-        })) as BlockStats | null;
+        const blockStats: BlockStats | null = (await this.rpc
+            .getblockstats(param)
+            .catch((e: unknown) => {
+                this.error(`Error getting block stats: ${e}`);
+                return null;
+            })) as BlockStats | null;
 
         return blockStats || null;
     }
@@ -571,10 +581,12 @@ export class BitcoinRPC extends Logger {
             stats: stats,
         };
 
-        const blockStats: BlockStats | null = (await this.rpc.getblockstats(param).catch((e) => {
-            this.error(`Error getting block stats: ${e.stack || e.message}`);
-            return null;
-        })) as BlockStats | null;
+        const blockStats: BlockStats | null = (await this.rpc
+            .getblockstats(param)
+            .catch((e: unknown) => {
+                this.error(`Error getting block stats: ${e}`);
+                return null;
+            })) as BlockStats | null;
 
         return blockStats || null;
     }
@@ -586,8 +598,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const tips: ChainTipInfo[] | null = (await this.rpc.getchaintips().catch((e) => {
-            this.error(`Error getting chain tips: ${e.stack || e.message}`);
+        const tips: ChainTipInfo[] | null = (await this.rpc.getchaintips().catch((e: unknown) => {
+            this.error(`Error getting chain tips: ${e}`);
             return null;
         })) as ChainTipInfo[] | null;
 
@@ -603,8 +615,8 @@ export class BitcoinRPC extends Logger {
 
         const chainTxStats: ChainTxStats | null = (await this.rpc
             .getchaintxstats(param)
-            .catch((e) => {
-                this.error(`Error getting chain tx stats: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting chain tx stats: ${e}`);
                 return null;
             })) as ChainTxStats | null;
 
@@ -618,8 +630,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        const difficulty: number | null = (await this.rpc.getdifficulty().catch((e) => {
-            this.error(`Error getting difficulty: ${e.stack || e.message}`);
+        const difficulty: number | null = (await this.rpc.getdifficulty().catch((e: unknown) => {
+            this.error(`Error getting difficulty: ${e}`);
             return 0;
         })) as number | null;
 
@@ -643,8 +655,8 @@ export class BitcoinRPC extends Logger {
 
         const transactionInfo: MemPoolTransactionInfo<V> | null = (await this.rpc
             .getmempoolancestors(param)
-            .catch((e) => {
-                this.error(`Error getting mempool ancestors: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting mempool ancestors: ${e}`);
                 return null;
             })) as MemPoolTransactionInfo<V> | null;
 
@@ -668,8 +680,8 @@ export class BitcoinRPC extends Logger {
 
         const transactionInfo: MemPoolTransactionInfo<V> | null = (await this.rpc
             .getmempooldescendants(param)
-            .catch((e) => {
-                this.error(`Error getting mempool descendants: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting mempool descendants: ${e}`);
                 return null;
             })) as MemPoolTransactionInfo<V> | null;
 
@@ -689,8 +701,8 @@ export class BitcoinRPC extends Logger {
 
         const transactionInfo: RawMemPoolTransactionInfo | null = (await this.rpc
             .getmempoolentry(param)
-            .catch((e) => {
-                this.error(`Error getting mempool entry: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting mempool entry: ${e}`);
                 return null;
             })) as RawMemPoolTransactionInfo | null;
 
@@ -706,8 +718,8 @@ export class BitcoinRPC extends Logger {
 
         const mempoolInfo: MempoolInfo<BitcoinVerbosity.NONE> | null = (await this.rpc
             .getmempoolinfo()
-            .catch((e) => {
-                this.error(`Error getting mempool info: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting mempool info: ${e}`);
                 return null;
             })) as MempoolInfo<BitcoinVerbosity.NONE> | null;
 
@@ -729,8 +741,8 @@ export class BitcoinRPC extends Logger {
 
         const mempoolInfo: MempoolInfo<V> | null = (await this.rpc
             .getrawmempool(param)
-            .catch((e) => {
-                this.error(`Error getting raw mempool: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting raw mempool: ${e}`);
                 return null;
             })) as MempoolInfo<V> | null;
 
@@ -756,8 +768,8 @@ export class BitcoinRPC extends Logger {
 
         const txOuputInfo: TransactionOutputInfo | null = (await this.rpc
             .gettxout(param)
-            .catch((e) => {
-                this.error(`Error getting tx out: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting tx out: ${e}`);
                 return null;
             })) as TransactionOutputInfo | null;
 
@@ -776,10 +788,12 @@ export class BitcoinRPC extends Logger {
             blockhash: blockHash,
         };
 
-        const txOuputProof: string | null = (await this.rpc.gettxoutproof(param).catch((e) => {
-            this.error(`Error getting tx out proof: ${e.stack || e.message}`);
-            return '';
-        })) as string | null;
+        const txOuputProof: string | null = (await this.rpc
+            .gettxoutproof(param)
+            .catch((e: unknown) => {
+                this.error(`Error getting tx out proof: ${e}`);
+                return '';
+            })) as string | null;
 
         return txOuputProof || null;
     }
@@ -793,8 +807,8 @@ export class BitcoinRPC extends Logger {
 
         const txOuputSetInfo: TransactionOutputSetInfo | null = (await this.rpc
             .gettxoutsetinfo()
-            .catch((e) => {
-                this.error(`Error getting tx out set info: ${e.stack || e.message}`);
+            .catch((e: unknown) => {
+                this.error(`Error getting tx out set info: ${e}`);
                 return null;
             })) as TransactionOutputSetInfo | null;
 
@@ -812,8 +826,8 @@ export class BitcoinRPC extends Logger {
             blockhash: blockHash,
         };
 
-        await this.rpc.preciousblock(param).catch((e) => {
-            this.error(`Error precious block: ${e.stack || e.message}`);
+        await this.rpc.preciousblock(param).catch((e: unknown) => {
+            this.error(`Error precious block: ${e}`);
         });
     }
 
@@ -828,10 +842,12 @@ export class BitcoinRPC extends Logger {
             height: height,
         };
 
-        const prunedHeight: number | null = (await this.rpc.pruneblockchain(param).catch((e) => {
-            this.error(`Error pruning blockchain: ${e.stack || e.message}`);
-            return 0;
-        })) as number | null;
+        const prunedHeight: number | null = (await this.rpc
+            .pruneblockchain(param)
+            .catch((e: unknown) => {
+                this.error(`Error pruning blockchain: ${e}`);
+                return 0;
+            })) as number | null;
 
         return prunedHeight ?? null;
     }
@@ -843,8 +859,8 @@ export class BitcoinRPC extends Logger {
             throw new Error('RPC not initialized');
         }
 
-        await this.rpc.savemempool().catch((e) => {
-            this.error(`Error saving mempool: ${e.stack || e.message}`);
+        await this.rpc.savemempool().catch((e: unknown) => {
+            this.error(`Error saving mempool: ${e}`);
         });
     }
 
@@ -860,8 +876,8 @@ export class BitcoinRPC extends Logger {
             nblocks: nblocks,
         };
 
-        const checked: boolean | null = (await this.rpc.verifychain(param).catch((e) => {
-            this.error(`Error verifying chain: ${e.stack || e.message}`);
+        const checked: boolean | null = (await this.rpc.verifychain(param).catch((e: unknown) => {
+            this.error(`Error verifying chain: ${e}`);
             return false;
         })) as boolean | null;
 
@@ -879,10 +895,12 @@ export class BitcoinRPC extends Logger {
             proof: proof,
         };
 
-        const proofs: string[] | null = (await this.rpc.verifytxoutproof(param).catch((e) => {
-            this.error(`Error verifying tx out proof: ${e.stack || e.message}`);
-            return [];
-        })) as string[] | null;
+        const proofs: string[] | null = (await this.rpc
+            .verifytxoutproof(param)
+            .catch((e: unknown) => {
+                this.error(`Error verifying tx out proof: ${e}`);
+                return [];
+            })) as string[] | null;
 
         return proofs || null;
     }

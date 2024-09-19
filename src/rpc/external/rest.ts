@@ -34,7 +34,7 @@ export class RESTClient extends Fetch {
 
         const params: RESTIniOptions = {
             ...opts,
-            base_url: opts.base_url || opts.url + ':' + (opts.port || 8332),
+            base_url: opts.base_url || opts.url + ':' + (opts.port || 8332).toString(),
             transform: 'json',
             headers: { 'Content-Type': 'application/json' },
         };

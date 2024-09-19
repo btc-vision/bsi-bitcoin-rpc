@@ -1,5 +1,5 @@
-import { RESTClient, RESTIniOptions } from './rest.js';
 import { IFetchOptions, UnsuccessfulFetch } from 'rpc-request';
+import { RESTClient, RESTIniOptions } from './rest.js';
 
 export type RPCIniOptions = RESTIniOptions & {
     user?: string;
@@ -416,11 +416,11 @@ export class RPCClient extends RESTClient {
         return super.post(uri, request);
     }
 
-    async rpc<T = unknown | null>(method: string, params = {}, wallet?: string): Promise<T> {
+    async rpc<T = unknown>(method: string, params = {}, wallet?: string): Promise<T> {
         const uri = typeof wallet === 'undefined' ? '/' : 'wallet/' + wallet;
         const body = { method, params, jsonrpc: 1.0, id: 'rpc-bitcoin' };
         try {
-            const response = (await this.batch(body, uri)) as JSONRPCResult;
+            const response = await this.batch(body, uri);
             if (response.error && response.result === null) {
                 throw this.fullResponse ? response.error : new Error(response.error.message);
             }
