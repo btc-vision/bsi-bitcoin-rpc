@@ -1,7 +1,7 @@
 {
     "name": "@btc-vision/bsi-bitcoin-rpc",
     "type": "module",
-    "version": "1.0.27",
+    "version": "1.0.28",
     "description": "The one and only fully typed Bitcoin RPC client for Node.js",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -50,7 +50,7 @@
     ],
     "dependencies": {
         "@eslint/js": "^9.10.0",
-        "@btc-vision/bsi-common": "^1.0.21",
+        "@btc-vision/bsi-common": "^1.0.22",
         "gulp": "^5.0.0",
         "gulp-cached": "^1.1.1",
         "gulp-logger": "^0.0.2",
