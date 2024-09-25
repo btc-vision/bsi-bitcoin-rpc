@@ -1,7 +1,7 @@
 {
     "name": "@btc-vision/bsi-bitcoin-rpc",
     "type": "module",
-    "version": "1.0.28",
+    "version": "1.0.29",
     "description": "The one and only fully typed Bitcoin RPC client for Node.js",
     "main": "build/index.js",
     "types": "build/index.d.ts",

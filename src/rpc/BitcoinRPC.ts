@@ -43,6 +43,7 @@ import {
 import { TransactionOutputInfo } from './types/TransactionOutputInfo.js';
 import { TransactionOutputSetInfo } from './types/TransactionOutputSetInfo.js';
 import { WalletInfo } from './types/WalletInfo.js';
+import { RawMempool } from './types/RawMempool.js';
 
 export class BitcoinRPC extends Logger {
     public readonly logColor: string = '#fa9600';
@@ -728,7 +729,7 @@ export class BitcoinRPC extends Logger {
 
     public async getRawMempool<V extends BitcoinVerbosity>(
         verbose?: V,
-    ): Promise<MempoolInfo<V> | null> {
+    ): Promise<RawMempool<V> | null> {
         this.debugMessage('getRawMempool');
 
         if (!this.rpc) {
@@ -739,12 +740,12 @@ export class BitcoinRPC extends Logger {
             verbose: verbose !== BitcoinVerbosity.RAW,
         };
 
-        const mempoolInfo: MempoolInfo<V> | null = (await this.rpc
+        const mempoolInfo: RawMempool<V> | null = (await this.rpc
             .getrawmempool(param)
             .catch((e: unknown) => {
                 this.error(`Error getting raw mempool: ${e}`);
                 return null;
-            })) as MempoolInfo<V> | null;
+            })) as RawMempool<V> | null;
 
         return mempoolInfo || null;
     }
