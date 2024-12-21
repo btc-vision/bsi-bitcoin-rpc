@@ -1,5 +1,6 @@
 import { IFetchOptions, UnsuccessfulFetch } from 'rpc-request';
 import { RESTClient, RESTIniOptions } from './rest.js';
+import { BlockData } from '../types/BlockData.js';
 
 export type RPCIniOptions = RESTIniOptions & {
     user?: string;
@@ -410,6 +411,9 @@ export class RPCClient extends RESTClient {
 
     batch(body: JSONRPC | JSONRPC[], uri = '/'): Promise<JSONRPCResult> {
         const request: IFetchOptions = {
+            //headers: {
+            //    'Content-Type': 'application/json',
+            //},
             body: JSON.stringify(body),
         };
 
@@ -455,6 +459,42 @@ export class RPCClient extends RESTClient {
         return this.rpc('getblock', { blockhash, verbosity });
     }
 
+    async getblockBatch(blockhashes: string[], verbosity = 1) {
+        try {
+            const body = blockhashes.map((blockhash) => {
+                return {
+                    method: 'getblock',
+                    params: {
+                        blockhash,
+                        verbosity,
+                    },
+                    jsonrpc: 1.0,
+                    id: 'rpc-bitcoin',
+                };
+            });
+
+            const response = await this.batch(body, '/');
+            const finalResponse: (BlockData | null)[] = [];
+            for (const res of response as unknown as JSONRPCResult[]) {
+                if (res.result) {
+                    finalResponse.push(res.result as unknown as BlockData);
+                } else {
+                    finalResponse.push(null);
+                }
+            }
+
+            return finalResponse;
+        } catch (error) {
+            const err: DefinedUnsuccessfulFetch = error as DefinedUnsuccessfulFetch;
+
+            if (err && err.data && err.data.error && err.data.result === null) {
+                throw this.fullResponse ? err.data : new Error(err.data.error.message);
+            }
+
+            throw error;
+        }
+    }
+
     /**
      * @description Returns an object containing various state info regarding blockchain processing.
      */
@@ -481,6 +521,44 @@ export class RPCClient extends RESTClient {
      */
     getblockhash({ height }: Height) {
         return this.rpc('getblockhash', { height });
+    }
+
+    /**
+     * @description Returns hash of block in best-block-chain at height provided.
+     */
+    async getblockhashes(heights: Height, count: number) {
+        try {
+            const response = await this.batch(
+                Array.from({ length: count }, (_, i) => {
+                    return {
+                        method: 'getblockhash',
+                        params: { height: heights.height + i },
+                        jsonrpc: 1.0,
+                        id: 'rpc-bitcoin',
+                    };
+                }),
+                '/',
+            );
+
+            const finalResponse: (string | null)[] = [];
+            for (const res of response as unknown as JSONRPCResult[]) {
+                if (res.result) {
+                    finalResponse.push(res.result as unknown as string);
+                } else {
+                    finalResponse.push(null);
+                }
+            }
+
+            return finalResponse;
+        } catch (error) {
+            const err: DefinedUnsuccessfulFetch = error as DefinedUnsuccessfulFetch;
+
+            if (err && err.data && err.data.error && err.data.result === null) {
+                throw this.fullResponse ? err.data : new Error(err.data.error.message);
+            }
+
+            throw error;
+        }
     }
 
     /**

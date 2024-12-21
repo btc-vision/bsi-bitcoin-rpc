@@ -98,6 +98,23 @@ export class BitcoinRPC extends Logger {
         return bestBlockHash || null;
     }
 
+    public async getBlockBatch(blockHashes: string[]): Promise<BlockData[] | null> {
+        this.debugMessage('getBlockBatch');
+
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const blockData: BlockData[] | null = (await this.rpc
+            .getblockBatch(blockHashes)
+            .catch((e: unknown) => {
+                this.error(`Error getting block batch: ${e}`);
+                return null;
+            })) as BlockData[] | null;
+
+        return blockData || null;
+    }
+
     public async getBlockAsHexString(blockHash: string): Promise<string | null> {
         this.debugMessage('getBlockAsHexString');
 
@@ -195,6 +212,44 @@ export class BitcoinRPC extends Logger {
                 this.error(`Error getting block data: ${e}`);
                 return null;
             })) as BlockDataWithTransactionData | null;
+
+        return blockData || null;
+    }
+
+    public async getBlockHashes(height: number, count: number): Promise<(string | null)[] | null> {
+        this.debugMessage(`getBlockHashes ${height} ${count}`);
+
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const param: Height = {
+            height,
+        };
+
+        const blockHashes: (string | null)[] | null = (await this.rpc
+            .getblockhashes(param, count)
+            .catch((e: unknown) => {
+                this.error(`Error getting block hashes: ${e}`);
+                return [];
+            })) as (string | null)[] | null;
+
+        return blockHashes || null;
+    }
+
+    public async getBlocksInfoWithTransactionData(
+        blockHashes: string[],
+    ): Promise<(BlockDataWithTransactionData | null)[] | null> {
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const blockData: (BlockDataWithTransactionData | null)[] | null = (await this.rpc
+            .getblockBatch(blockHashes, 2)
+            .catch((e: unknown) => {
+                this.error(`Error getting block data: ${e}`);
+                return null;
+            })) as unknown as (BlockDataWithTransactionData | null)[];
 
         return blockData || null;
     }
