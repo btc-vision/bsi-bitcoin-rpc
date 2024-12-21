@@ -1,6 +1,8 @@
 import { IFetchOptions, UnsuccessfulFetch } from 'rpc-request';
 import { RESTClient, RESTIniOptions } from './rest.js';
 import { BlockData } from '../types/BlockData.js';
+import { RawTransaction } from '../types/BitcoinRawTransaction.js';
+import { BitcoinVerbosity } from '../types/BitcoinVerbosity.js';
 
 export type RPCIniOptions = RESTIniOptions & {
     user?: string;
@@ -961,6 +963,42 @@ export class RPCClient extends RESTClient {
      */
     getrawtransaction(options: GetRawTransactionParams) {
         return this.rpc('getrawtransaction', options);
+    }
+
+    async getrawtransactionBatch<V extends BitcoinVerbosity>(txids: string[], verbose = true) {
+        try {
+            const body = txids.map((txid) => {
+                return {
+                    method: 'getrawtransaction',
+                    params: {
+                        txid,
+                        verbose,
+                    },
+                    jsonrpc: 1.0,
+                    id: 'rpc-bitcoin',
+                };
+            });
+
+            const response = await this.batch(body, '/');
+            const finalResponse: (RawTransaction<V> | null)[] = [];
+            for (const res of response as unknown as JSONRPCResult[]) {
+                if (res.result) {
+                    finalResponse.push(res.result as unknown as RawTransaction<V>);
+                } else {
+                    finalResponse.push(null);
+                }
+            }
+
+            return finalResponse;
+        } catch (error) {
+            const err: DefinedUnsuccessfulFetch = error as DefinedUnsuccessfulFetch;
+
+            if (err && err.data && err.data.error && err.data.result === null) {
+                throw this.fullResponse ? err.data : new Error(err.data.error.message);
+            }
+
+            throw error;
+        }
     }
 
     /**

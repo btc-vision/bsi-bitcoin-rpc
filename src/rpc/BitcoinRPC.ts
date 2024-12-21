@@ -558,6 +558,26 @@ export class BitcoinRPC extends Logger {
         return rawTx || null;
     }
 
+    public async getRawTransactions<V extends BitcoinVerbosity>(
+        txs: string[],
+        verbose?: V,
+    ): Promise<(RawTransaction<V> | null)[] | null> {
+        this.debugMessage(`getRawTransactions ${txs}`);
+
+        if (!this.rpc) {
+            throw new Error('RPC not initialized');
+        }
+
+        const txsInfo: (RawTransaction<V> | null)[] | null = (await this.rpc
+            .getrawtransactionBatch(txs, verbose !== BitcoinVerbosity.RAW)
+            .catch((e: unknown) => {
+                this.error(`Error getting raw transactions: ${e}`);
+                return null;
+            })) as (RawTransaction<V> | null)[];
+
+        return txsInfo || null;
+    }
+
     public async getBlockHeight(): Promise<BasicBlockInfo | null> {
         this.debugMessage('getBlockHeight');
 
