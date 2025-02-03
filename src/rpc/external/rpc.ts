@@ -424,7 +424,7 @@ export class RPCClient extends RESTClient {
 
     async rpc<T = unknown>(method: string, params = {}, wallet?: string): Promise<T> {
         const uri = typeof wallet === 'undefined' ? '/' : 'wallet/' + wallet;
-        const body = { method, params, jsonrpc: 1.0, id: 'rpc-bitcoin' };
+        const body = { method, params, jsonrpc: '1.0', id: 'rpc-bitcoin' };
         try {
             const response = await this.batch(body, uri);
             if (response.error && response.result === null) {
@@ -470,7 +470,7 @@ export class RPCClient extends RESTClient {
                         blockhash,
                         verbosity,
                     },
-                    jsonrpc: 1.0,
+                    jsonrpc: '1.0',
                     id: 'rpc-bitcoin',
                 };
             });
@@ -535,7 +535,7 @@ export class RPCClient extends RESTClient {
                     return {
                         method: 'getblockhash',
                         params: { height: heights.height + i },
-                        jsonrpc: 1.0,
+                        jsonrpc: '1.0',
                         id: 'rpc-bitcoin',
                     };
                 }),
@@ -974,7 +974,7 @@ export class RPCClient extends RESTClient {
                         txid,
                         verbose,
                     },
-                    jsonrpc: 1.0,
+                    jsonrpc: '1.0',
                     id: 'rpc-bitcoin',
                 };
             });
